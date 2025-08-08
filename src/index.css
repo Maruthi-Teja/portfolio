@@ -1,0 +1,6 @@
+/* index.css - minimal global tweaks */
+html, body, #root {
+  height: 100%;
+}
+a { text-decoration: none; }
+button { cursor: pointer; }
