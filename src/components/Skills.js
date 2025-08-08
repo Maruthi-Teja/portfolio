@@ -1,51 +1,97 @@
-import React, { useEffect, useRef } from "react";
+// Skills.js
+
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { useInView } from "react-intersection-observer";
 
 export default function Skills() {
-  const containerRef = useRef(null);
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
 
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.querySelectorAll(".skill-bar").forEach((el) => {
-            const w = el.getAttribute("data-w");
-            el.style.width = w + "%";
-          });
-        }
-      });
-    }, { threshold: 0.3 });
+  const skillsData = [
+    { name: "Java", type: "core", related: ["Spring Boot", "Kafka", "RESTful APIs"] },
+    { name: "Spring Boot", type: "node", related: ["Java"] },
+    { name: "Kafka", type: "node", related: ["Java"] },
+    { name: "RESTful APIs", type: "node", related: ["Java"] },
+    { name: "AWS", type: "core", related: ["DynamoDB", "S3"] },
+    { name: "DynamoDB", type: "node", related: ["AWS"] },
+    { name: "S3", type: "node", related: ["AWS"] },
+    { name: "Tools", type: "core", related: ["Git", "CI/CD"] },
+    { name: "Git", type: "node", related: ["Tools"] },
+    { name: "CI/CD", type: "node", related: ["Tools"] },
+  ];
+  
+  const [hoveredSkill, setHoveredSkill] = useState(null);
 
-    if (containerRef.current) {
-      containerRef.current.querySelectorAll(".skill-item").forEach((el) => observer.observe(el));
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
+
+  const getBackgroundColor = (skillName) => {
+    if (hoveredSkill && hoveredSkill === skillName) {
+      return "bg-indigo-600 text-white";
     }
+    if (hoveredSkill && skillsData.find(s => s.name === hoveredSkill)?.related.includes(skillName)) {
+      return "bg-indigo-200 text-indigo-800";
+    }
+    if (hoveredSkill && skillsData.find(s => s.name === skillName)?.related.includes(hoveredSkill)) {
+      return "bg-indigo-200 text-indigo-800";
+    }
+    return "bg-white text-gray-800";
+  };
 
-    return () => observer.disconnect();
-  }, []);
+  const getShadow = (skillName) => {
+    if (hoveredSkill && (hoveredSkill === skillName || skillsData.find(s => s.name === hoveredSkill)?.related.includes(skillName) || skillsData.find(s => s.name === skillName)?.related.includes(hoveredSkill))) {
+      return "shadow-lg scale-105 transform";
+    }
+    return "shadow";
+  };
 
   return (
-    <section id="skills" className="bg-gray-50 py-16">
-      <div className="max-w-4xl mx-auto px-6">
-        <h2 className="text-2xl font-bold text-indigo-600">Skills</h2>
-        <p className="mt-3 text-gray-600">Tech skills with relative strength — useful to recruiters scanning for fit.</p>
+    <section id="skills" className="bg-slate-50 py-20">
+      <div className="max-w-6xl mx-auto px-6">
+        <h2 className="text-4xl font-extrabold text-center text-indigo-700 mb-4">
+          My Skill Tree
+        </h2>
+        <p className="text-center text-lg text-gray-600 max-w-2xl mx-auto mb-12">
+          A visual representation of my technical skills and how they connect.
+        </p>
 
-        <div ref={containerRef} className="mt-6 space-y-4">
-          {[
-            { name: "Java", level: "Expert", w: 95 },
-            { name: "Spring Boot", level: "Advanced", w: 88 },
-            { name: "AWS (DynamoDB, S3)", level: "Advanced", w: 82 },
-            { name: "Kafka & Event-Driven", level: "Proficient", w: 78 }
-          ].map((s, i) => (
-            <div key={i} className="skill-item">
-              <div className="flex justify-between items-center">
-                <div className="text-sm font-medium">{s.name}</div>
-                <div className="text-xs text-gray-500">{s.level}</div>
-              </div>
-              <div className="w-full bg-white rounded-full h-3 mt-2 shadow-sm">
-                <div data-w={s.w} className="skill-bar h-3 rounded-full bg-gradient-to-r from-indigo-600 to-purple-500" style={{width: 0}}></div>
-              </div>
-            </div>
+        <motion.div
+          ref={ref}
+          variants={containerVariants}
+          initial="hidden"
+          animate={inView ? "show" : "hidden"}
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        >
+          {skillsData.map((skill, index) => (
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              onMouseEnter={() => setHoveredSkill(skill.name)}
+              onMouseLeave={() => setHoveredSkill(null)}
+              className={`p-6 rounded-2xl border border-gray-200 transition-all duration-300 transform ${getBackgroundColor(skill.name)} ${getShadow(skill.name)}`}
+            >
+              <h3 className="text-lg font-bold">{skill.name}</h3>
+              <p className="mt-2 text-sm">
+                {skill.type === "core" ? "Core Expertise" : "Supporting Skill"}
+              </p>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
