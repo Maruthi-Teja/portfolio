@@ -9,7 +9,7 @@ import Projects from "./components/Projects";
 import Skills from "./components/Skills";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import Loader from "./components/Loader";
+import Loader from "./components/Loader"; // Your new Loader component
 
 export default function App() {
   const [modal, setModal] = useState({ open: false, content: null });
@@ -18,10 +18,13 @@ export default function App() {
   
   const [loading, setLoading] = useState(true);
 
+  // Calculate the total time for the loader: (number of log messages * delay per message) + final message display time
+  const totalLoaderDuration = (10 * 250) + 1000; // 10 messages * 250ms/message + 1000ms for final message
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 5000); // Loading time is now 5 seconds
+    }, totalLoaderDuration + 500); // Add a small buffer to ensure the exit animation completes
 
     return () => clearTimeout(timer);
   }, []);
