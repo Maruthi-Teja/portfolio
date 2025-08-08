@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.37a597c5.css","mappings":"AACA,gBACE,WACF,CACA,EAAI,oBAAuB,CAC3B,OAAS,cAAiB","sources":["index.css"],"sourcesContent":["/* index.css - minimal global tweaks */\nhtml, body, #root {\n  height: 100%;\n}\na { text-decoration: none; }\nbutton { cursor: pointer; }\n"],"names":[],"sourceRoot":""}
